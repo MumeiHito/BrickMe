@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='cropper/cropper.min.css') }}">
+  <style>
+    img {
+      max-width: 100%;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>{{ title }}</h1>
+
+    <img id="image" src="{{ url_for('uploaded_file', filename=filename) }}">
+
+    <form id="crop-form" method="POST">
+      <input type="hidden" name="x">
+      <input type="hidden" name="y">
+      <input type="hidden" name="width">
+      <input type="hidden" name="height">
+      <button type="submit">Next</button>
+    </form>
+  </div>
+
+  <script src="{{ url_for('static', filename='cropper/cropper.min.js') }}"></script>
+  <script>
+    const image = document.getElementById('image');
+    const form = document.getElementById('crop-form');
+    const cropper = new Cropper(image, {
+      viewMode: 1,
+      autoCropArea: 0.8,
+      movable: true,
+      zoomable: true,
+      scalable: false,
+      rotatable: false,
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const cropData = cropper.getData(true);
+      form.x.value = cropData.x;
+      form.y.value = cropData.y;
+      form.width.value = cropData.width;
+      form.height.value = cropData.height;
+      form.submit(); // now actually submit the form
+    });
+  </script>
+</body>
+</html>

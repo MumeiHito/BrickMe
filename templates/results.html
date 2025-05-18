@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Results for {{ name }}</title>
+  <style>
+    img {
+      max-height: 150px;
+    }
+    .part {
+      margin-bottom: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Most Similar LEGO Parts for "{{ name }}"</h1>
+
+  <div class="part">
+    <h2>Head:</h2>
+    <p>{{ head }}</p>
+    <img src="{{ head_url }}" alt="{{ head }}"><br>
+    <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?M={{ head[5:-4] }}#T=S&amp;O=%7B%22iconly%22%3A0%7D" target="_blank">
+      View on BrickLink
+    </a>
+  </div>
+
+  <div class="part">
+    <h2>Torso:</h2>
+    <p>{{ torso }}</p>
+    <img src="{{ torso_url }}" alt="{{ torso }}"><br>
+    <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?M={{ torso[6:-4] }}#T=S&amp;O=%7B%22iconly%22%3A0%7D" target="_blank">
+      View on BrickLink
+    </a>
+  </div>
+
+  <div class="part">
+    <h2>Legs:</h2>
+    <p>{{ legs }}</p>
+    <img src="{{ legs_url }}" alt="{{ legs }}"><br>
+    <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?M={{ legs[5:-4] }}#T=S&amp;O=%7B%22iconly%22%3A0%7D" target="_blank">
+      View on BrickLink
+    </a>
+  </div>
+</body>
+</html>
