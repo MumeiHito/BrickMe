@@ -1,13 +1,56 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-  <title>Upload Image</title>
+  <meta charset="UTF-8">
+  <title>BrickMe - Upload</title>
+  <style>
+    body {
+      background-color: #C1E1C1;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .upload-container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .upload-container h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .upload-btn {
+      display: inline-block;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #007BFF;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .upload-btn:hover {
+      background-color: #0056b3;
+    }
+    input[type="file"] {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <h1>Upload full-body image</h1>
-  <form method="post" enctype="multipart/form-data">
-    <input type="file" name="file" accept="image/*">
-    <input type="submit" value="Upload">
-  </form>
+  <div class="upload-container">
+    <h1>Upload Your Full-Body Photo</h1>
+    <form method="post" enctype="multipart/form-data">
+      <label for="file-upload" class="upload-btn">Choose File</label>
+      <input id="file-upload" type="file" name="file" onchange="this.form.submit()">
+    </form>
+  </div>
 </body>
 </html>

@@ -23,9 +23,35 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+def resize_uploaded_part(image: Image.Image, part: str) -> Image.Image:
+    """
+    Resize the uploaded image part (head, torso, legs) to predefined sizes.
+    """
+    sizes = {
+        "head": (133, 122),
+        "torso": (222, 140),
+        "legs": (152, 101)
+    }
+
+    target_size = sizes.get(part)
+    if target_size:
+        resized = image.resize(target_size, Image.LANCZOS)
+        return resized
+    else:
+        return image  # If no matching part, return original
+
+
+
 def crop_and_save(image_path, x, y, w, h, part, name):
+    """
+    Crop the selected area and resize it if it's head, torso, or legs.
+    """
     img = Image.open(image_path)
     cropped = img.crop((x, y, x + w, y + h))
+
+    # Resize based on part
+    cropped = resize_uploaded_part(cropped, part)
+
     part_path = os.path.join(CROP_FOLDER, f"{part}_{name}.png")
     cropped.save(part_path)
 
@@ -48,7 +74,10 @@ def get_image_embedding(image: Image.Image):
     return embedding.cpu().squeeze(0)
 
 
-def find_similar(part: str, image: Image.Image, top_k=1):
+def find_similar(part: str, image: Image.Image, top_k=5):
+    """
+    Find the top_k most similar images to the input image.
+    """
     embedding = get_image_embedding(image).unsqueeze(0)
     data = torch.load(f"{part}_embeddings.pt", weights_only=True)
     embeddings = data["embeddings"].cpu()
@@ -111,25 +140,38 @@ def show_results(name):
     torso_path = os.path.join(CROP_FOLDER, f"torso_{name}.png")
     legs_path = os.path.join(CROP_FOLDER, f"legs_{name}.png")
 
+    # Determine uploaded file extension
+    uploaded_file_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{name}.png")
+    if not os.path.exists(uploaded_file_path):
+        uploaded_file_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{name}.jpg")
+        ext = "jpg"
+    else:
+        ext = "png"
+
+
     try:
-        head_match = find_similar("head", Image.open(head_path))[0]
-        torso_match = find_similar("torso", Image.open(torso_path))[0]
-        legs_match = find_similar("legs", Image.open(legs_path))[0]
+        head_matches = find_similar("head", Image.open(head_path), top_k=5)
+        torso_matches = find_similar("torso", Image.open(torso_path), top_k=5)
+        legs_matches = find_similar("legs", Image.open(legs_path), top_k=5)
 
-        head_id = head_match[5:-4]
-        torso_id = torso_match[6:-4]
-        legs_id = legs_match[5:-4]
-
-        head_url = f"https://img.bricklink.com/ItemImage/MN/0/{head_id}.png"
-        torso_url = f"https://img.bricklink.com/ItemImage/MN/0/{torso_id}.png"
-        legs_url = f"https://img.bricklink.com/ItemImage/MN/0/{legs_id}.png"
+        head_urls = [f"https://img.bricklink.com/ItemImage/MN/0/{m[5:-4]}.png" for m in head_matches]
+        torso_urls = [f"https://img.bricklink.com/ItemImage/MN/0/{m[6:-4]}.png" for m in torso_matches]
+        legs_urls = [f"https://img.bricklink.com/ItemImage/MN/0/{m[5:-4]}.png" for m in legs_matches]
 
     except Exception as e:
         return f"❌ Error during similarity search: {e}"
 
-    return render_template('results.html', name=name,
-                           head=head_match, torso=torso_match, legs=legs_match,
-                           head_url=head_url, torso_url=torso_url, legs_url=legs_url)
+    return render_template(
+        "results.html",
+        name=name,
+        ext=ext,
+        head_urls=head_urls,
+        torso_urls=torso_urls,
+        legs_urls=legs_urls,
+        head_matches=head_matches,
+        torso_matches=torso_matches,
+        legs_matches=legs_matches
+    )
 
 
 if __name__ == '__main__':

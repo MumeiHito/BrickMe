@@ -1,45 +1,129 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Results for {{ name }}</title>
-  <style>
-    img {
-      max-height: 150px;
-    }
-    .part {
-      margin-bottom: 40px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Most Similar LEGO Parts</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #C1E1C1;
+            color: #333;
+            margin: 0;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .user-photo {
+            margin-bottom: 2rem;
+        }
+
+        .user-photo img {
+            max-width: 300px;
+            border-radius: 8px;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .part-section {
+            margin-bottom: 3rem;
+        }
+
+        .part-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .image-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .image-container {
+            background-color: #fff;
+            padding: 0.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .image-container:hover {
+            transform: scale(1.05);
+        }
+
+        .image-container img {
+            max-height: 150px;
+            display: block;
+            margin: 0 auto 0.5rem;
+        }
+
+        .image-container a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .image-container a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
 </head>
 <body>
-  <h1>Most Similar LEGO Parts for "{{ name }}"</h1>
 
-  <div class="part">
-    <h2>Head:</h2>
-    <p>{{ head }}</p>
-    <img src="{{ head_url }}" alt="{{ head }}"><br>
-    <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?M={{ head[5:-4] }}#T=S&amp;O=%7B%22iconly%22%3A0%7D" target="_blank">
-      View on BrickLink
-    </a>
-  </div>
+    <h1>Most Similar LEGO Parts for "{{ name }}"</h1>
 
-  <div class="part">
-    <h2>Torso:</h2>
-    <p>{{ torso }}</p>
-    <img src="{{ torso_url }}" alt="{{ torso }}"><br>
-    <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?M={{ torso[6:-4] }}#T=S&amp;O=%7B%22iconly%22%3A0%7D" target="_blank">
-      View on BrickLink
-    </a>
-  </div>
+    <div class="user-photo">
+        <img src="/uploads/{{ name }}.{{ ext }}" alt="Uploaded photo">
+    </div>
 
-  <div class="part">
-    <h2>Legs:</h2>
-    <p>{{ legs }}</p>
-    <img src="{{ legs_url }}" alt="{{ legs }}"><br>
-    <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?M={{ legs[5:-4] }}#T=S&amp;O=%7B%22iconly%22%3A0%7D" target="_blank">
-      View on BrickLink
-    </a>
-  </div>
+    <div class="part-section">
+        <div class="part-title">Head:</div>
+        <div class="image-row">
+            {% for i in range(head_urls|length) %}
+                <div class="image-container">
+                    <img src="{{ head_urls[i] }}" alt="Head Match">
+                    <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?M={{ head_matches[i].split('_')[-1][:-4] }}#T=S&amp;O={'iconly':0 }" target="_blank">
+                        View on BrickLink
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="part-section">
+        <div class="part-title">Torso:</div>
+        <div class="image-row">
+            {% for i in range(torso_urls|length) %}
+                <div class="image-container">
+                    <img src="{{ torso_urls[i] }}" alt="Torso Match">
+                    <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?M={{ torso_matches[i].split('_')[-1][:-4] }}#T=S&amp;O={'iconly':0 }" target="_blank">
+                        View on BrickLink
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="part-section">
+        <div class="part-title">Legs:</div>
+        <div class="image-row">
+            {% for i in range(legs_urls|length) %}
+                <div class="image-container">
+                    <img src="{{ legs_urls[i] }}" alt="Legs Match">
+                    <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?M={{ legs_matches[i].split('_')[-1][:-4] }}#T=S&amp;O={'iconly':0 }" target="_blank">
+                        View on BrickLink
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
 </body>
 </html>
