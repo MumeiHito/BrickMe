@@ -5,3 +5,5 @@ clip @ git+https://github.com/openai/CLIP.git
 Pillow
 matplotlib
 tqdm
+rembg
+onnxruntime

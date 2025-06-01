@@ -1,0 +1,23 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Environments
+.venv/
+env/
+venv/
+.idea/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Uploads & cropped images
+uploads/
+cropped/
+
+# PyTorch / model files
+*.pt
+
+# System files
+.DS_Store
