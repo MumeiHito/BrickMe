@@ -61,7 +61,7 @@
   <div class="container">
     <h1>{{ title }}</h1>
 
-    <!-- Кнопка подтверждения обрезки -->
+    <!-- Confirm crop button -->
     <form id="crop-form" method="POST">
       <button type="submit" class="crop-btn">✅ Confirm and Next</button>
       <input type="hidden" name="x">
@@ -70,7 +70,7 @@
       <input type="hidden" name="height">
     </form>
 
-    <!-- Изображение для кадрирования -->
+    <!-- Image to crop -->
     <img id="image" src="{{ url_for('uploaded_file', filename=filename) }}">
 
   </div>
