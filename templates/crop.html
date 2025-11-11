@@ -2,68 +2,287 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>{{ title }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }} - BrickMe</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='cropper/cropper.min.css') }}">
   <style>
-    body {
-      background-color: #f0f0f0; /* светло-серый фон */
-      font-family: Arial, sans-serif;
-      color: #333;
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .logo {
+      font-size: 2.5rem;
+      margin-bottom: 5px;
+      display: inline-block;
+    }
+
+    .app-title {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Progress indicator */
+    .progress-container {
+      max-width: 600px;
+      margin: 0 auto 30px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .progress-line {
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #e2e8f0;
+      z-index: 0;
+    }
+
+    .progress-line-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.6s ease;
+    }
+
+    .step {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      flex: 1;
+    }
+
+    .step-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: #a0aec0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 8px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+
+    .step.active .step-circle {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      transform: scale(1.1);
+    }
+
+    .step.completed .step-circle {
+      background: #48bb78;
+      color: white;
+    }
+
+    .step-label {
+      font-size: 0.85rem;
+      color: #4a5568;
+      font-weight: 600;
+    }
+
+    .step.active .step-label {
+      color: #667eea;
+      font-weight: 700;
     }
 
     .container {
-      max-width: 800px;
-      margin: 40px auto;
+      max-width: 900px;
+      margin: 0 auto;
       background-color: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      text-align: center;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     h1 {
-      margin-top: 0;
-      font-size: 24px;
-      color: #444;
+      margin: 0 0 25px 0;
+      font-size: 1.75rem;
+      color: #2d3748;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .instructions {
+      background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+      padding: 15px 20px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      border-left: 4px solid #667eea;
+      color: #4a5568;
+      font-size: 0.95rem;
+    }
+
+    .crop-controls {
+      text-align: center;
+      margin-bottom: 25px;
     }
 
     .crop-btn {
       display: inline-block;
-      padding: 12px 24px;
-      font-size: 16px;
-      background-color: #4CAF50;
+      padding: 14px 40px;
+      font-size: 1rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 12px;
       cursor: pointer;
-      margin-bottom: 15px;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .crop-btn:hover {
-      background-color: #45a049;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+    }
+
+    .crop-btn:active {
+      transform: translateY(0);
+    }
+
+    .image-container {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      background: #f7fafc;
     }
 
     img {
       max-width: 100%;
-      border: 1px solid #ddd;
-      border-radius: 5px;
+      display: block;
+      border-radius: 0;
     }
 
-    form {
+    .hint {
+      text-align: center;
       margin-top: 20px;
+      color: #718096;
+      font-size: 0.9rem;
+    }
+
+    .hint-icon {
+      margin-right: 5px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+
+      .progress-container {
+        padding: 20px 15px;
+      }
+
+      .step-label {
+        font-size: 0.75rem;
+      }
+
+      .step-circle {
+        width: 36px;
+        height: 36px;
+        font-size: 0.95rem;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="header">
+    <div class="logo">🧱</div>
+    <div class="app-title">BrickMe</div>
+  </div>
+
+  <!-- Progress Indicator -->
+  <div class="progress-container">
+    <div class="progress-steps">
+      <div class="progress-line">
+        <div class="progress-line-fill" style="width: {% if step == 'head' %}33%{% elif step == 'torso' %}66%{% else %}100%{% endif %};"></div>
+      </div>
+      <div class="step {% if step == 'head' %}active{% endif %}">
+        <div class="step-circle">👤</div>
+        <div class="step-label">Head</div>
+      </div>
+      <div class="step {% if step == 'torso' %}active{% elif step == 'legs' %}completed{% endif %}">
+        <div class="step-circle">👕</div>
+        <div class="step-label">Torso</div>
+      </div>
+      <div class="step {% if step == 'legs' %}active{% endif %}">
+        <div class="step-circle">👖</div>
+        <div class="step-label">Legs</div>
+      </div>
+    </div>
+  </div>
+
   <div class="container">
     <h1>{{ title }}</h1>
 
+    <div class="instructions">
+      <strong>📌 Instructions:</strong> Drag and resize the selection box to crop the 
+      {% if step == 'head' %}head area{% elif step == 'torso' %}torso area{% else %}legs area{% endif %} 
+      of your photo. You can zoom using mouse wheel or pinch gesture.
+    </div>
+
     <!-- Confirm crop button -->
     <form id="crop-form" method="POST">
-      <button type="submit" class="crop-btn">✅ Confirm and Next</button>
+      <div class="crop-controls">
+        <button type="submit" class="crop-btn">✓ Confirm and Continue</button>
+      </div>
       <input type="hidden" name="x">
       <input type="hidden" name="y">
       <input type="hidden" name="width">
@@ -71,8 +290,14 @@
     </form>
 
     <!-- Image to crop -->
-    <img id="image" src="{{ url_for('uploaded_file', filename=filename) }}">
+    <div class="image-container">
+      <img id="image" src="{{ url_for('uploaded_file', filename=filename) }}" alt="Photo to crop">
+    </div>
 
+    <div class="hint">
+      <span class="hint-icon">💡</span>
+      <strong>Tip:</strong> Make sure the selection covers the entire area for best results
+    </div>
   </div>
 
   <script src="{{ url_for('static', filename='cropper/cropper.min.js') }}"></script>
@@ -86,6 +311,14 @@
       zoomable: true,
       scalable: false,
       rotatable: false,
+      responsive: true,
+      restore: true,
+      guides: true,
+      center: true,
+      highlight: true,
+      cropBoxMovable: true,
+      cropBoxResizable: true,
+      toggleDragModeOnDblclick: true,
     });
 
     form.addEventListener('submit', function (e) {
@@ -95,7 +328,13 @@
       form.y.value = cropData.y;
       form.width.value = cropData.width;
       form.height.value = cropData.height;
-      form.submit(); // submit the form
+      
+      // Add loading state
+      const btn = form.querySelector('.crop-btn');
+      btn.textContent = '⏳ Processing...';
+      btn.disabled = true;
+      
+      form.submit();
     });
   </script>
 </body>

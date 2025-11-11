@@ -7,3 +7,4 @@ matplotlib
 tqdm
 rembg
 onnxruntime
+numpy<2.0.0

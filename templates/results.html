@@ -2,128 +2,393 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Most Similar LEGO Parts</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your LEGO Minifigure Matches - BrickMe</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #C1E1C1;
-            color: #333;
+        * {
             margin: 0;
-            padding: 2rem;
-            text-align: center;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        h1 {
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: inline-block;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .app-title {
+            color: white;
             font-size: 2rem;
-            margin-bottom: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.1rem;
+            font-weight: 300;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .success-badge {
+            display: inline-block;
+            background: rgba(72, 187, 120, 0.9);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-photo-section {
+            max-width: 400px;
+            margin: 0 auto 50px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .user-photo {
-            margin-bottom: 2rem;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         }
 
         .user-photo img {
-            max-width: 300px;
-            border-radius: 8px;
-            border: 3px solid #fff;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            max-width: 100%;
+            border-radius: 12px;
+            display: block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .photo-label {
+            margin-top: 15px;
+            color: #4a5568;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .part-section {
-            margin-bottom: 3rem;
+            margin-bottom: 50px;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .part-header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .part-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .part-icon {
+            font-size: 2rem;
+        }
+
+        .part-subtitle {
+            color: #718096;
+            font-size: 0.95rem;
+            margin-top: 8px;
         }
 
         .image-row {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            justify-items: center;
         }
 
         .image-container {
-            background-color: #fff;
-            padding: 0.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s;
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 250px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .image-container:hover::before {
+            transform: scaleX(1);
         }
 
         .image-container:hover {
-            transform: scale(1.05);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .rank-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-wrapper {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            min-height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .image-container img {
+            max-width: 100%;
             max-height: 150px;
             display: block;
-            margin: 0 auto 0.5rem;
+            margin: 0 auto;
+            transition: transform 0.3s ease;
         }
 
-        .image-container a {
+        .image-container:hover img {
+            transform: scale(1.05);
+        }
+
+        .link-button {
+            display: block;
             text-decoration: none;
-            color: #007bff;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
 
-        .image-container a:hover {
-            text-decoration: underline;
+        .link-button:hover {
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+            transform: translateY(-2px);
         }
 
+        .back-button {
+            display: inline-block;
+            margin: 40px auto 0;
+            padding: 14px 40px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .back-button:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-container {
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .image-row {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+
+            .part-title {
+                font-size: 1.4rem;
+            }
+
+            .app-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .image-row {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-
-    <h1>Most Similar LEGO Parts for "{{ name }}"</h1>
-
-    <div class="user-photo">
-        <img src="/uploads/{{ name }}.{{ ext }}" alt="Uploaded photo">
+    <div class="header">
+        <div class="logo">🧱</div>
+        <div class="app-title">BrickMe Results</div>
+        <div class="subtitle">Here are your perfect LEGO minifigure matches!</div>
+        <div class="success-badge">✨ AI Match Complete</div>
     </div>
 
-    <div class="part-section">
-        <div class="part-title">Head:</div>
-        <div class="image-row">
-            {% for i in range(head_urls|length) %}
-                <div class="image-container">
-                    <img src="{{ head_urls[i] }}" alt="Head Match">
-                    <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?M={{ head_matches[i].split('_')[-1][:-4] }}#T=S&amp;O={'iconly':0 }" target="_blank">
-                        View on BrickLink
-                    </a>
-                </div>
-            {% endfor %}
+    <div class="user-photo-section">
+        <div class="user-photo">
+            <img src="/uploads/{{ name }}.{{ ext }}" alt="Your uploaded photo">
+            <div class="photo-label">📸 Your Original Photo</div>
         </div>
     </div>
 
-    <div class="part-section">
-        <div class="part-title">Torso:</div>
-        <div class="image-row">
-            {% for i in range(torso_urls|length) %}
-                <div class="image-container">
-                    <img src="{{ torso_urls[i] }}" alt="Torso Match">
-                    <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?M={{ torso_matches[i].split('_')[-1][:-4] }}#T=S&amp;O={'iconly':0 }" target="_blank">
-                        View on BrickLink
-                    </a>
+    <div class="container">
+        <!-- Head Section -->
+        <div class="part-section">
+            <div class="part-header">
+                <div class="part-title">
+                    <span class="part-icon">👤</span>
+                    Head Matches
                 </div>
-            {% endfor %}
+                <div class="part-subtitle">Top 5 most similar LEGO minifigure heads</div>
+            </div>
+            <div class="image-row">
+                {% for i in range(head_urls|length) %}
+                    <div class="image-container">
+                        <div class="rank-badge">#{{ i + 1 }}</div>
+                        <div class="image-wrapper">
+                            <img src="{{ head_urls[i] }}" alt="Head Match {{ i + 1 }}" loading="lazy">
+                        </div>
+                        <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?M={{ head_matches[i].split('_')[-1][:-4] }}#T=S&amp;O={'iconly':0 }" target="_blank" class="link-button">
+                            🔗 View on BrickLink
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Torso Section -->
+        <div class="part-section">
+            <div class="part-header">
+                <div class="part-title">
+                    <span class="part-icon">👕</span>
+                    Torso Matches
+                </div>
+                <div class="part-subtitle">Top 5 most similar LEGO minifigure torsos</div>
+            </div>
+            <div class="image-row">
+                {% for i in range(torso_urls|length) %}
+                    <div class="image-container">
+                        <div class="rank-badge">#{{ i + 1 }}</div>
+                        <div class="image-wrapper">
+                            <img src="{{ torso_urls[i] }}" alt="Torso Match {{ i + 1 }}" loading="lazy">
+                        </div>
+                        <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?M={{ torso_matches[i].split('_')[-1][:-4] }}#T=S&amp;O={'iconly':0 }" target="_blank" class="link-button">
+                            🔗 View on BrickLink
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Legs Section -->
+        <div class="part-section">
+            <div class="part-header">
+                <div class="part-title">
+                    <span class="part-icon">👖</span>
+                    Legs Matches
+                </div>
+                <div class="part-subtitle">Top 5 most similar LEGO minifigure legs</div>
+            </div>
+            <div class="image-row">
+                {% for i in range(legs_urls|length) %}
+                    <div class="image-container">
+                        <div class="rank-badge">#{{ i + 1 }}</div>
+                        <div class="image-wrapper">
+                            <img src="{{ legs_urls[i] }}" alt="Legs Match {{ i + 1 }}" loading="lazy">
+                        </div>
+                        <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?M={{ legs_matches[i].split('_')[-1][:-4] }}#T=S&amp;O={'iconly':0 }" target="_blank" class="link-button">
+                            🔗 View on BrickLink
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="button-container">
+            <a href="/" class="back-button">🔄 Try Another Photo</a>
         </div>
     </div>
-
-    <div class="part-section">
-        <div class="part-title">Legs:</div>
-        <div class="image-row">
-            {% for i in range(legs_urls|length) %}
-                <div class="image-container">
-                    <img src="{{ legs_urls[i] }}" alt="Legs Match">
-                    <a href="https://www.bricklink.com/v2/catalog/catalogitem.page?M={{ legs_matches[i].split('_')[-1][:-4] }}#T=S&amp;O={'iconly':0 }" target="_blank">
-                        View on BrickLink
-                    </a>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-
 </body>
 </html>
